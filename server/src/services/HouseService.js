@@ -13,6 +13,10 @@ class HouseService {
         }
         return house
     }
+    async createHouse(houseData) {
+        const house = await dbContext.Houses.create(houseData)
+        return house
+    }
 
 }
 

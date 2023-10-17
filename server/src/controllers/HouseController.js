@@ -1,4 +1,4 @@
-import { dbContext } from "../db/DbContext.js";
+import { Auth0Provider } from "@bcwdev/auth0provider";
 import { houseService } from "../services/HouseService.js";
 import BaseController from "../utils/BaseController.js";
 
@@ -8,6 +8,10 @@ export class HouseController extends BaseController {
         this.router
             .get('', this.getHouse)
             .get('/:houseId', this.getHouseById)
+
+            .use(Auth0Provider.getAuthorizedUserInfo)
+
+            .post('', this.createHouse)
     }
     async getHouse(request, response, next) {
         try {
@@ -26,4 +30,17 @@ export class HouseController extends BaseController {
             next(error)
         }
     }
+    async createHouse(request, response, next) {
+        try {
+            const houseData = request.body
+            const userInfo = request.userInfo
+            houseData.creatorId = userInfo.id
+            const house = await houseService.createHouse(houseData)
+            return response.send(house)
+        } catch (error) {
+            next(error)
+        }
+    }
+
+
 }
